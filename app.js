@@ -1,13 +1,24 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+let createError = require('http-errors');
+let express = require('express');
+let path = require('path');
+let cookieParser = require('cookie-parser');
+let logger = require('morgan');
+let SocketIO = require('socket.io');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+let indexRouter = require('./routes/index');
+let usersRouter = require('./routes/users');
 
-var app = express();
+let app = express();
+let http = require('http').Server(app);
+
+var io = require('socket.io')(http);
+io.on('connection', function(socket){
+  console.log('a user connected');
+  socket.on('disconnect', () => {
+    console.log('a user dicsonnected');
+  });
+});
+    
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -36,6 +47,10 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+});
+
+http.listen(3000, function(){
+  console.log('listening on *:3000');
 });
 
 module.exports = app;
