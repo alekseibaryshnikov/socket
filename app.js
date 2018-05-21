@@ -15,17 +15,17 @@ var io = require('socket.io')(http);
 io.on('connection', function(socket){
   console.log('a user connected');
 
-  socket.on('messageFromClient', (message) => {
+  socket.on('createMessage', (message) => {
     console.log(JSON.stringify(message));
+    io.emit('newMessage', {
+      from: message.from,
+      text: message.text,
+      createdAt: new Date().getTime()
+    });
   });
   
   socket.on('disconnect', () => {
     console.log('a user dicsonnected');
-  });
-
-  socket.emit('messageFromServer', {
-      from: 'Server User',
-      text: 'Hy there from Server!'
   });
 });
     
