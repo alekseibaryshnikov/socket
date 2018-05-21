@@ -5,13 +5,30 @@ socket.on('connect', () => {
 
 socket.on('newMessage', function(message) {
   console.log(message);
-  let chat = document.querySelector('div.chat');
-  let newMessage = document.createElement('p');
 
-  newMessage.innerHTML = `${Date.now()} ${message.from}: ${message.text}`;
-  chat.appendChild(newMessage);
+  drawMessage(message);
+});
+
+socket.on('welcomeMessage', function(message) {
+  console.log(message);
+
+  drawMessage(message);
+});
+
+socket.on('newUser', function(message) {
+  console.log(message);
+
+  drawMessage(message); 
 });
 
 socket.on('disconnect', () => {
   console.log('disconnected from server');
 });
+
+function drawMessage(message) {
+  let chat = document.querySelector('div.chat');
+  let newMessage = document.createElement('p');
+
+  newMessage.innerHTML = `${Date.now()} ${message.from}: ${message.text}`;
+  chat.appendChild(newMessage);
+}

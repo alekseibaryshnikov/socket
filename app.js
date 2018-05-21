@@ -15,6 +15,16 @@ var io = require('socket.io')(http);
 io.on('connection', function(socket){
   console.log('a user connected');
 
+  socket.emit('welcomeMessage', {
+    from: 'Admin',
+    text: 'Welcome to chat!'
+  });
+
+  socket.broadcast.emit('newUser', {
+    from: 'Admin',
+    text: 'New user connected!'
+  });
+
   socket.on('createMessage', (message) => {
     console.log(JSON.stringify(message));
     io.emit('newMessage', {
