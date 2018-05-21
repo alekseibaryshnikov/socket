@@ -9,18 +9,6 @@ socket.on('newMessage', function(message) {
   drawMessage(message);
 });
 
-socket.on('welcomeMessage', function(message) {
-  console.log(message);
-
-  drawMessage(message);
-});
-
-socket.on('newUser', function(message) {
-  console.log(message);
-
-  drawMessage(message); 
-});
-
 socket.on('disconnect', () => {
   console.log('disconnected from server');
 });
