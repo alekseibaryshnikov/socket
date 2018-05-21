@@ -4,16 +4,7 @@
     <title>{{title}}</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <script src="/socket.io/socket.io.js"></script>
-    <script>
-      let socket = io();
-      socket.on('connect', () => {
-        console.log('user connected to server');
-      });
-
-      socket.on('disconnect', () => {
-        console.log('disconnected from server');
-      });
-    </script>
+    <script src="/javascripts/client.js"></script>
   </head>
   <body>
     {{{body}}}
