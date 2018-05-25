@@ -1,37 +1,26 @@
-let createError = require('http-errors');
-let express = require('express');
-let path = require('path');
-let cookieParser = require('cookie-parser');
-let logger = require('morgan');
-let SocketIO = require('socket.io');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const SocketIO = require('socket.io');
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+const {generateMessage} = require('./server/utils/message');
+const app = express();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 
-let indexRouter = require('./routes/index');
-let usersRouter = require('./routes/users');
-
-let app = express();
-let http = require('http').Server(app);
-
-var io = require('socket.io')(http);
 io.on('connection', function(socket){
   console.log('a user connected');
 
-  socket.emit('newMessage', {
-    from: 'Admin',
-    text: 'Welcome to chat!'
-  });
+  socket.emit('newMessage', generateMessage('Admin', 'Welcome to chat!'));
 
-  socket.broadcast.emit('newMessage', {
-    from: 'Admin',
-    text: 'New user connected!'
-  });
+  socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user connected!'));
 
   socket.on('createMessage', (message) => {
     console.log(JSON.stringify(message));
-    io.emit('newMessage', {
-      from: message.from,
-      text: message.text,
-      createdAt: new Date().getTime()
-    });
+    io.emit('newMessage', generateMessage(message.from, message.text));
   });
   
   socket.on('disconnect', () => {
