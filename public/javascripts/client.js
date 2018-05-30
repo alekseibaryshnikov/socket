@@ -8,14 +8,14 @@ let geoButton = document.querySelector('button#send-geolocation');
 
 if (geoButton) {
   geoButton.addEventListener('click', function (e) {
+    e.preventDefault();
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function (location) {
-        console.log(location.coords);
         socket.emit('createLocationMessage', {
           from: 'User',
           latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-          createdAt: location.timestamp
+          longitude: location.coords.longitude
         });
       });
     } else {
@@ -62,9 +62,9 @@ function drawMessage(message) {
   let newMessage = document.createElement('p');
 
   if (message.url) {
-    newMessage.innerHTML = `${Date.now()} ${message.from}: <a href="${message.url}" target="__blank">Get my coordinates!</a>`;
+    newMessage.innerHTML = `${message.createdAt} ${message.from}: <a href="${message.url}" target="__blank">Get my coordinates!</a>`;
   } else {
-    newMessage.innerHTML = `${Date.now()} ${message.from}: ${message.text}`;
+    newMessage.innerHTML = `${message.createdAt} ${message.from}: ${message.text}`;
   }
   chat.appendChild(newMessage);
 }

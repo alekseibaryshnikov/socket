@@ -23,14 +23,13 @@ io.on('connection', function (socket) {
   });
 
   socket.on('createLocationMessage', (message) => {
-    io.emit('newLocationMessage', generateLocationMessage(message));
+    io.emit('newLocationMessage', generateLocationMessage(message.from, message.latitude, message.longitude));
   });
 
   socket.on('disconnect', () => {
     console.log('a user dicsonnected');
   });
 });
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -41,6 +40,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/jquery', express.static(path.join(__dirname, '/node_modules/jquery/dist/')));
+app.use('/popper', express.static(path.join(__dirname, '/node_modules/popper.js/dist/umd/')));
+app.use('/bootstrap', express.static(path.join(__dirname, '/node_modules/bootstrap/dist/')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);

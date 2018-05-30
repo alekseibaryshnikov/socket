@@ -1,12 +1,21 @@
-<h1>{{title}}</h1>
-<p>Welcome to {{title}}</p>
-
-
-<div class="chat"></div>
-
-<form id="message-form">
-    <input type="text" name="messageText" />
-    <button>Send message</button>
-</form>
-
-<button id="send-geolocation">Send geolocation!</button>
+<div class="container">
+  <div class="row">
+    <div class="col-3">
+      asd
+    </div>
+    <div class="col-9">
+      <div class="chat"></div>
+      <div id="messager">
+        <form id="message-form">
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <button id="send-geolocation" class="btn btn-outline-secondary" type="button">Send geolocation!</button>
+              <button class="btn btn-outline-secondary" type="submit">Send message</button>
+            </div>
+            <input type="text" class="form-control" placeholder="" aria-label="" aria-describedby="basic-addon1" name="messageText">
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
