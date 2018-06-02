@@ -62,9 +62,9 @@ function drawMessage(message) {
   let newMessage = document.createElement('p');
 
   if (message.url) {
-    newMessage.innerHTML = `${message.createdAt} ${message.from}: <a href="${message.url}" target="__blank">Get my coordinates!</a>`;
+    newMessage.innerHTML = `${message.createdAt} <strong>${message.from}</strong>:<br/> <a href="${message.url}" target="__blank">Get my coordinates!</a>`;
   } else {
-    newMessage.innerHTML = `${message.createdAt} ${message.from}: ${message.text}`;
+    newMessage.innerHTML = `${message.createdAt} <strong>${message.from}</strong>:<br/> ${message.text}`;
   }
   chat.appendChild(newMessage);
 }

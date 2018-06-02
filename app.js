@@ -4,12 +4,14 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const SocketIO = require('socket.io');
-const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
 const { generateMessage, generateLocationMessage } = require('./server/utils/message');
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
+
+const indexRouter = require('./routes/index');
+const chatRouter = require('./routes/chat');
+
 
 io.on('connection', function (socket) {
   console.log('a user connected');
@@ -46,8 +48,7 @@ app.use('/popper', express.static(path.join(__dirname, '/node_modules/popper.js/
 app.use('/bootstrap', express.static(path.join(__dirname, '/node_modules/bootstrap/dist/')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
-
+app.use('/chat', chatRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
