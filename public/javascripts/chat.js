@@ -75,5 +75,8 @@ function drawMessage(message) {
   } else {
     newMessage.innerHTML = `${message.createdAt} <strong>${message.from}</strong>:<br/> ${message.text}`;
   }
-  chat.appendChild(newMessage);
+
+  if (chat) {
+    chat.appendChild(newMessage);
+  }
 }
