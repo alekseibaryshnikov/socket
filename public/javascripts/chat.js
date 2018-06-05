@@ -1,7 +1,16 @@
 let socket = io();
 
 socket.on('connect', () => {
-  console.log('user connected');
+  deparam().result.then((result) => {
+    socket.emit('join', result, (err) => {
+      if (err) {
+        alert(err);
+        window.location.href = '/';
+      } else {
+        console.log('No error');
+      }
+    });
+  });
 });
 
 let geoButton = document.querySelector('button#send-geolocation');

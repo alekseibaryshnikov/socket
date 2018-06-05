@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const SocketIO = require('socket.io');
 const { generateMessage, generateLocationMessage } = require('./server/utils/message');
+const { isRealString } = require('./server/utils/validation');
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
@@ -14,11 +15,17 @@ const chatRouter = require('./routes/chat');
 
 
 io.on('connection', function (socket) {
-  console.log('a user connected');
-
   socket.emit('newMessage', generateMessage('Admin', 'Welcome to chat!'));
 
   socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user connected!'));
+
+  socket.on('join', (params, callback) => {
+      if(!isRealString(params.name) || !isRealString(params.room)) {
+        callback('Name and room name are required!');
+      }
+
+      callback();
+  });
 
   socket.on('createMessage', (message) => {
     io.emit('newMessage', generateMessage(message.from, message.text));

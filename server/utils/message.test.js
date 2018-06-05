@@ -10,7 +10,7 @@ describe('- generateMessage()', () => {
     expect(message).toHaveProperty('from', from);
     expect(message).toHaveProperty('text', text);
     expect(message).toHaveProperty('createdAt');
-    expect(typeof message.createdAt).toBe('number');
+    expect(typeof message.createdAt).toBe('string');
   });
 });
 
