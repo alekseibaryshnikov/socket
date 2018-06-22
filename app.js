@@ -3,9 +3,9 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const SocketIO = require('socket.io');
 const { generateMessage, generateLocationMessage } = require('./server/utils/message');
 const { isRealString } = require('./server/utils/validation');
+const { Users } = require('./server/utils/users');
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
@@ -13,33 +13,53 @@ const io = require('socket.io')(http);
 const indexRouter = require('./routes/index');
 const chatRouter = require('./routes/chat');
 
+let users = new Users();
 
-io.on('connection', function (socket) {
-  socket.on('join', (params, callback) => {
-      if(!isRealString(params.name) || !isRealString(params.room)) {
-        callback('Name and room name are required!');
-      }
+io.on('connection', function(socket) {
+	socket.on('join', (params, callback) => {
+		if (!isRealString(params.name) || !isRealString(params.room)) {
+			callback('Name and room name are required!');
+		}
 
-      socket.join(params.room);
+		socket.join(params.room);
+		users.removeUser(socket.id);
+		users.addUser(socket.id, params.name, params.room);
 
-      socket.emit('newMessage', generateMessage('Admin', 'Welcome to chat!'));
+		io.to(params.room).emit('updateUserList', users.getUsersList(params.room));
 
-      socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} has joined.`));
+		socket.emit('newMessage', generateMessage('Admin', 'Welcome to chat!'));
 
-      callback();
-  });
+		socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} has joined.`));
 
-  socket.on('createMessage', (message) => {
-    io.emit('newMessage', generateMessage(message.from, message.text));
-  });
+		callback();
+	});
 
-  socket.on('createLocationMessage', (message) => {
-    io.emit('newLocationMessage', generateLocationMessage(message.from, message.latitude, message.longitude));
-  });
+	socket.on('createMessage', (message) => {
+		let user = users.getUser(socket.id);
 
-  socket.on('disconnect', () => {
-    console.log('a user dicsonnected');
-  });
+		if (user && isRealString(message.text)) {
+			io.to(user.room).emit('newMessage', generateMessage(user.name, message.text));
+		}
+	});
+
+	socket.on('createLocationMessage', (message) => {
+		let user = users.getUser(socket.id);
+
+		if (user) {
+			io
+				.to(user.room)
+				.emit('newLocationMessage', generateLocationMessage(user.name, message.latitude, message.longitude));
+		}
+	});
+
+	socket.on('disconnect', () => {
+		let user = users.removeUser(socket.id);
+
+		if (user) {
+			io.to(user.room).emit('updateUserList', users.getUsersList(user.room));
+			io.to(user.room).emit('newMessage', generateMessage('Admin', `User ${user.name} has left.`));
+		}
+	});
 });
 
 // view engine setup
@@ -59,23 +79,23 @@ app.use('/bootstrap', express.static(path.join(__dirname, '/node_modules/bootstr
 app.use('/', indexRouter);
 app.use('/chat', chatRouter);
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(createError(404));
+app.use(function(req, res, next) {
+	next(createError(404));
 });
 
 // error handler
-app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+app.use(function(err, req, res, next) {
+	// set locals, only providing error in development
+	res.locals.message = err.message;
+	res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+	// render the error page
+	res.status(err.status || 500);
+	res.render('error');
 });
 
-http.listen(3000, function () {
-  console.log('listening on *:3000');
+http.listen(3000, function() {
+	console.log('listening on *:3000');
 });
 
 module.exports = app;
